@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Puzzle Blocks Ultimate Pro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Puzzle Blocks Ultimate</title>
 
 <style>
 :root{
@@ -12,7 +12,6 @@
 --accent:#22c55e;
 --accent2:#3b82f6;
 --text:#e5e7eb;
---soft:#1f2937;
 }
 
 *{
@@ -22,58 +21,40 @@ font-family:Inter,system-ui;
 
 body{
 margin:0;
-background:radial-gradient(circle at 20% 20%,#0f172a,#020617);
+background:linear-gradient(135deg,#020617,#020617);
 color:var(--text);
 display:flex;
 justify-content:center;
 align-items:center;
 min-height:100vh;
-overflow:hidden;
 }
 
 .app{
 width:100%;
 max-width:1100px;
 padding:20px;
-animation:fadeIn .6s ease;
-}
-
-@keyframes fadeIn{
-from{opacity:0;transform:translateY(20px)}
-to{opacity:1}
 }
 
 .header{
 display:flex;
 justify-content:space-between;
-margin-bottom:12px;
+margin-bottom:10px;
 }
 
 .title{
-font-size:28px;
+font-size:26px;
 font-weight:700;
-background:linear-gradient(90deg,#22c55e,#3b82f6);
--webkit-background-clip:text;
-color:transparent;
 }
 
 .stats{
 display:flex;
 gap:10px;
-flex-wrap:wrap;
 }
 
 .card{
-background:rgba(15,23,42,.8);
-backdrop-filter:blur(10px);
+background:var(--panel);
 padding:10px 14px;
 border-radius:12px;
-box-shadow:0 10px 30px rgba(0,0,0,.4);
-animation:pop .4s ease;
-}
-
-@keyframes pop{
-from{transform:scale(.9);opacity:0}
 }
 
 .game{
@@ -83,10 +64,9 @@ gap:15px;
 }
 
 .board{
-background:rgba(15,23,42,.8);
+background:var(--panel);
 padding:12px;
 border-radius:16px;
-box-shadow:0 20px 50px rgba(0,0,0,.6);
 }
 
 .grid{
@@ -98,92 +78,59 @@ gap:6px;
 .cell{
 aspect-ratio:1;
 background:#020617;
-border-radius:8px;
-transition:.2s;
+border-radius:6px;
+transition:.15s;
 }
 
-.cell.hover{
+.cell.preview{
 background:#1e293b;
-transform:scale(1.05);
 }
 
 .filled{
 background:linear-gradient(135deg,var(--accent),var(--accent2));
-animation:drop .25s ease;
 }
 
-@keyframes drop{
-from{transform:scale(.7)}
-to{transform:scale(1)}
+.sidebar{
+display:flex;
+flex-direction:column;
+gap:10px;
 }
 
-.sidebar{display:flex;flex-direction:column;gap:10px}
-
-.pieces{display:flex;flex-direction:column;gap:10px}
+.pieces{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+}
 
 .piece{
-background:rgba(31,41,55,.7);
-padding:10px;
-border-radius:12px;
-cursor:grab;
-transition:.2s;
-animation:float 4s ease-in-out infinite;
-}
-
-.piece:active{cursor:grabbing}
-
-@keyframes float{
-0%,100%{transform:translateY(0)}
-50%{transform:translateY(-4px)}
+background:#111827;
+padding:8px;
+border-radius:10px;
+cursor:pointer;
 }
 
 .block{
-width:18px;
-height:18px;
+width:16px;
+height:16px;
 background:linear-gradient(135deg,var(--accent),var(--accent2));
 margin:2px;
-border-radius:4px;
+border-radius:3px;
 }
 
 .btn{
 background:linear-gradient(135deg,var(--accent),var(--accent2));
 border:none;
 color:white;
-padding:9px;
-border-radius:10px;
+padding:8px;
+border-radius:8px;
 cursor:pointer;
-transition:.2s;
 }
 
-.btn:hover{
-transform:translateY(-2px);
-box-shadow:0 8px 20px rgba(0,0,0,.4);
-}
-
-.reward{
-background:rgba(15,23,42,.8);
-padding:10px;
-border-radius:12px;
-}
-
-.achievement{
-background:#020617;
-padding:6px;
-border-radius:6px;
-margin-top:4px;
-font-size:12px;
-animation:slide .4s ease;
-}
-
-@keyframes slide{
-from{transform:translateX(20px);opacity:0}
-}
-
-.drag-preview{
+.dragging{
 position:fixed;
 pointer-events:none;
-transform:scale(1.2);
-z-index:999;
+z-index:1000;
+opacity:.9;
 }
 
 @media(max-width:900px){
@@ -199,12 +146,11 @@ z-index:999;
 <div class="app">
 
 <div class="header">
-<div class="title">🧩 Puzzle Blocks Ultimate Pro</div>
+<div class="title">🧩 Puzzle Blocks</div>
 
 <div class="stats">
 <div class="card">Score <span id="score">0</span></div>
 <div class="card">Coins <span id="coins">0</span></div>
-<div class="card">Level <span id="level">1</span></div>
 </div>
 
 </div>
@@ -222,11 +168,8 @@ z-index:999;
 <div id="pieces" class="pieces"></div>
 </div>
 
-<div class="reward">
-<button class="btn" onclick="dailyReward()">🎁 Daily</button>
-<button class="btn" onclick="buyPower()">⚡ Power</button>
-<button class="btn" onclick="unlockTheme()">🎨 Theme</button>
-<div id="achievements"></div>
+<div class="card">
+<button class="btn" onclick="dailyReward()">🎁 Daily Reward</button>
 </div>
 
 </div>
@@ -243,8 +186,6 @@ const piecesEl=document.getElementById("pieces")
 let board=[]
 let score=0
 let coins=0
-let level=1
-let multiplier=1
 
 const shapes=[
 [[1,1],[1,1]],
@@ -257,13 +198,13 @@ const shapes=[
 
 function init(){
 for(let i=0;i<100;i++){
-let d=document.createElement("div")
-d.className="cell"
-grid.appendChild(d)
+let c=document.createElement("div")
+c.className="cell"
+grid.appendChild(c)
 board.push(0)
 }
 spawnPieces()
-load()
+render()
 }
 
 function spawnPieces(){
@@ -271,22 +212,25 @@ piecesEl.innerHTML=""
 for(let i=0;i<3;i++) createPiece()
 }
 
+let dragShape=null
+let dragEl=null
+
 function createPiece(){
-const shape=shapes[Math.random()*shapes.length|0]
+const shape=shapes[Math.floor(Math.random()*shapes.length)]
 const p=document.createElement("div")
 p.className="piece"
 p.dataset.shape=JSON.stringify(shape)
 
-shape.forEach(r=>{
-let row=document.createElement("div")
-row.style.display="flex"
-r.forEach(c=>{
-let b=document.createElement("div")
+shape.forEach(row=>{
+const r=document.createElement("div")
+r.style.display="flex"
+row.forEach(cell=>{
+const b=document.createElement("div")
 b.className="block"
-b.style.opacity=c?1:0
-row.appendChild(b)
+b.style.opacity=cell?1:0
+r.appendChild(b)
 })
-p.appendChild(row)
+p.appendChild(r)
 })
 
 p.addEventListener("pointerdown",startDrag)
@@ -294,17 +238,12 @@ p.addEventListener("pointerdown",startDrag)
 piecesEl.appendChild(p)
 }
 
-let dragShape=null
-let preview=null
-
 function startDrag(e){
-const el=e.currentTarget
+dragShape=JSON.parse(e.currentTarget.dataset.shape)
 
-preview=el.cloneNode(true)
-preview.classList.add("drag-preview")
-document.body.appendChild(preview)
-
-dragShape=JSON.parse(el.dataset.shape)
+ dragEl=e.currentTarget.cloneNode(true)
+ dragEl.classList.add("dragging")
+ document.body.appendChild(dragEl)
 
 moveDrag(e)
 
@@ -313,30 +252,28 @@ window.addEventListener("pointerup",endDrag)
 }
 
 function moveDrag(e){
-if(!preview) return
-preview.style.left=e.clientX+"px"
-preview.style.top=e.clientY+"px"
+if(!dragEl) return
+ dragEl.style.left=e.clientX-30+"px"
+ dragEl.style.top=e.clientY-30+"px"
 
-highlight(e)
+preview(e)
 }
 
-function highlight(e){
+function preview(e){
 const rect=grid.getBoundingClientRect()
 
 const x=Math.floor((e.clientX-rect.left)/(rect.width/10))
 const y=Math.floor((e.clientY-rect.top)/(rect.height/10))
 
-[...grid.children].forEach(c=>c.classList.remove("hover"))
+[...grid.children].forEach(c=>c.classList.remove("preview"))
 
 if(x<0||y<0||x>9||y>9) return
 
 const index=y*10+x
-if(grid.children[index]) grid.children[index].classList.add("hover")
+if(grid.children[index]) grid.children[index].classList.add("preview")
 }
 
 function endDrag(e){
-if(!dragShape) return
-
 const rect=grid.getBoundingClientRect()
 
 const x=Math.floor((e.clientX-rect.left)/(rect.width/10))
@@ -345,8 +282,7 @@ const y=Math.floor((e.clientY-rect.top)/(rect.height/10))
 place(dragShape,x,y)
 spawnPieces()
 
-preview.remove()
-preview=null
+if(dragEl) dragEl.remove()
 
 window.removeEventListener("pointermove",moveDrag)
 window.removeEventListener("pointerup",endDrag)
@@ -355,11 +291,11 @@ window.removeEventListener("pointerup",endDrag)
 function place(shape,x,y){
 let valid=true
 
-shape.forEach((r,dy)=>{
-r.forEach((c,dx)=>{
-if(c){
-let px=x+dx
-let py=y+dy
+shape.forEach((row,dy)=>{
+row.forEach((cell,dx)=>{
+if(cell){
+const px=x+dx
+const py=y+dy
 if(px>=10||py>=10||board[py*10+px]) valid=false
 }
 })
@@ -367,11 +303,11 @@ if(px>=10||py>=10||board[py*10+px]) valid=false
 
 if(!valid) return
 
-shape.forEach((r,dy)=>{
-r.forEach((c,dx)=>{
-if(c){
-let px=x+dx
-let py=y+dy
+shape.forEach((row,dy)=>{
+row.forEach((cell,dx)=>{
+if(cell){
+const px=x+dx
+const py=y+dy
 board[py*10+px]=1
 }
 })
@@ -382,7 +318,6 @@ coins+=2
 
 checkLines()
 render()
-save()
 }
 
 function checkLines(){
@@ -391,11 +326,11 @@ let full=true
 for(let x=0;x<10;x++){
 if(!board[y*10+x]) full=false
 }
+
 if(full){
 for(let x=0;x<10;x++) board[y*10+x]=0
 score+=50
 coins+=10
-achievement("Line Clear ✨")
 }
 }
 }
@@ -407,39 +342,15 @@ c.classList.toggle("filled",board[i])
 
 scoreEl.textContent=score
 coinsEl.textContent=coins
-levelEl.textContent=level
 }
 
-function achievement(t){
-let d=document.createElement("div")
-d.className="achievement"
-d.textContent=t
-achievements.prepend(d)
-}
-
-function save(){
-localStorage.setItem("score",score)
-localStorage.setItem("coins",coins)
-localStorage.setItem("board",JSON.stringify(board))
-}
-
-function load(){
-score=+localStorage.getItem("score")||0
-coins=+localStorage.getItem("coins")||0
-board=JSON.parse(localStorage.getItem("board"))||board
+function dailyReward(){
+coins+=30
 render()
-}
-
-function dailyReward(){coins+=40;render()}
-function buyPower(){coins-=30}
-function unlockTheme(){
-document.documentElement.style.setProperty("--accent","#f59e0b")
 }
 
 const scoreEl=document.getElementById("score")
 const coinsEl=document.getElementById("coins")
-const levelEl=document.getElementById("level")
-const achievements=document.getElementById("achievements")
 
 init()
 
