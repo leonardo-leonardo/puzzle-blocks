@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Puzzle Blocks Ultimate</title>
+<title>Puzzle Blocks Ultimate Pro</title>
 
 <style>
 :root{
@@ -15,89 +15,176 @@
 --soft:#1f2937;
 }
 
-*{box-sizing:border-box;font-family:Inter,system-ui}
+*{
+box-sizing:border-box;
+font-family:Inter,system-ui;
+}
 
 body{
 margin:0;
-background:linear-gradient(135deg,#020617,#020617);
+background:radial-gradient(circle at 20% 20%,#0f172a,#020617);
 color:var(--text);
 display:flex;
 justify-content:center;
 align-items:center;
 min-height:100vh;
+overflow:hidden;
 }
 
-.app{width:100%;max-width:1100px;padding:20px}
+.app{
+width:100%;
+max-width:1100px;
+padding:20px;
+animation:fadeIn .6s ease;
+}
 
-.header{display:flex;justify-content:space-between;margin-bottom:10px}
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(20px)}
+to{opacity:1}
+}
 
-.title{font-size:26px;font-weight:700}
+.header{
+display:flex;
+justify-content:space-between;
+margin-bottom:12px;
+}
 
-.stats{display:flex;gap:10px;flex-wrap:wrap}
+.title{
+font-size:28px;
+font-weight:700;
+background:linear-gradient(90deg,#22c55e,#3b82f6);
+-webkit-background-clip:text;
+color:transparent;
+}
+
+.stats{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
 
 .card{
-background:var(--panel);
+background:rgba(15,23,42,.8);
+backdrop-filter:blur(10px);
 padding:10px 14px;
 border-radius:12px;
-box-shadow:0 10px 30px rgba(0,0,0,.5)
+box-shadow:0 10px 30px rgba(0,0,0,.4);
+animation:pop .4s ease;
+}
+
+@keyframes pop{
+from{transform:scale(.9);opacity:0}
 }
 
 .game{
 display:grid;
 grid-template-columns:1fr 320px;
-gap:15px
+gap:15px;
 }
 
 .board{
-background:var(--panel);
+background:rgba(15,23,42,.8);
 padding:12px;
-border-radius:16px
+border-radius:16px;
+box-shadow:0 20px 50px rgba(0,0,0,.6);
 }
 
 .grid{
 display:grid;
 grid-template-columns:repeat(10,1fr);
-gap:6px
+gap:6px;
 }
 
 .cell{
 aspect-ratio:1;
 background:#020617;
-border-radius:6px;
-transition:.2s
+border-radius:8px;
+transition:.2s;
+}
+
+.cell.hover{
+background:#1e293b;
+transform:scale(1.05);
 }
 
 .filled{
 background:linear-gradient(135deg,var(--accent),var(--accent2));
-box-shadow:0 0 10px rgba(34,197,94,.4)
+animation:drop .25s ease;
+}
+
+@keyframes drop{
+from{transform:scale(.7)}
+to{transform:scale(1)}
 }
 
 .sidebar{display:flex;flex-direction:column;gap:10px}
 
-.pieces{display:flex;flex-direction:column;gap:8px}
+.pieces{display:flex;flex-direction:column;gap:10px}
 
 .piece{
-background:var(--soft);
-padding:8px;
-border-radius:10px;
-cursor:grab
+background:rgba(31,41,55,.7);
+padding:10px;
+border-radius:12px;
+cursor:grab;
+transition:.2s;
+animation:float 4s ease-in-out infinite;
 }
 
-.block{width:16px;height:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));margin:1px;border-radius:3px}
+.piece:active{cursor:grabbing}
+
+@keyframes float{
+0%,100%{transform:translateY(0)}
+50%{transform:translateY(-4px)}
+}
+
+.block{
+width:18px;
+height:18px;
+background:linear-gradient(135deg,var(--accent),var(--accent2));
+margin:2px;
+border-radius:4px;
+}
 
 .btn{
 background:linear-gradient(135deg,var(--accent),var(--accent2));
 border:none;
 color:white;
-padding:8px 10px;
-border-radius:8px;
+padding:9px;
+border-radius:10px;
 cursor:pointer;
-margin-top:5px
+transition:.2s;
 }
 
-.reward{background:var(--panel);padding:10px;border-radius:12px}
+.btn:hover{
+transform:translateY(-2px);
+box-shadow:0 8px 20px rgba(0,0,0,.4);
+}
 
-.achievement{background:#020617;padding:6px;border-radius:6px;margin-top:4px;font-size:12px}
+.reward{
+background:rgba(15,23,42,.8);
+padding:10px;
+border-radius:12px;
+}
+
+.achievement{
+background:#020617;
+padding:6px;
+border-radius:6px;
+margin-top:4px;
+font-size:12px;
+animation:slide .4s ease;
+}
+
+@keyframes slide{
+from{transform:translateX(20px);opacity:0}
+}
+
+.drag-preview{
+position:fixed;
+pointer-events:none;
+transform:scale(1.2);
+z-index:999;
+}
 
 @media(max-width:900px){
 .game{grid-template-columns:1fr}
@@ -112,7 +199,7 @@ margin-top:5px
 <div class="app">
 
 <div class="header">
-<div class="title">🧩 Puzzle Blocks Ultimate</div>
+<div class="title">🧩 Puzzle Blocks Ultimate Pro</div>
 
 <div class="stats">
 <div class="card">Score <span id="score">0</span></div>
@@ -136,16 +223,10 @@ margin-top:5px
 </div>
 
 <div class="reward">
-<div>🎁 Rewards</div>
-<button class="btn" onclick="dailyReward()">Daily Reward</button>
-<button class="btn" onclick="buyPower()">Buy Powerup (30)</button>
-<button class="btn" onclick="unlockTheme()">Theme (50)</button>
+<button class="btn" onclick="dailyReward()">🎁 Daily</button>
+<button class="btn" onclick="buyPower()">⚡ Power</button>
+<button class="btn" onclick="unlockTheme()">🎨 Theme</button>
 <div id="achievements"></div>
-</div>
-
-<div class="card">
-<div>👥 Multiplayer</div>
-<button class="btn" onclick="startMultiplayer()">Start Race</button>
 </div>
 
 </div>
@@ -164,12 +245,6 @@ let score=0
 let coins=0
 let level=1
 let multiplier=1
-
-const sounds={
-place:new Audio("https://actions.google.com/sounds/v1/cartoon/pop.ogg"),
-line:new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"),
-reward:new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg")
-}
 
 const shapes=[
 [[1,1],[1,1]],
@@ -214,44 +289,67 @@ row.appendChild(b)
 p.appendChild(row)
 })
 
-p.draggable=true
-
-p.addEventListener("dragstart",e=>{
-e.dataTransfer.setData("shape",p.dataset.shape)
-})
-
-// mobile touch
-p.addEventListener("touchstart",e=>{
-window.touchShape=p.dataset.shape
-})
+p.addEventListener("pointerdown",startDrag)
 
 piecesEl.appendChild(p)
 }
 
-// drag
+let dragShape=null
+let preview=null
 
-grid.addEventListener("dragover",e=>e.preventDefault())
+function startDrag(e){
+const el=e.currentTarget
 
-grid.addEventListener("drop",e=>{
-const shape=JSON.parse(e.dataTransfer.getData("shape"))
-dropShape(e,shape)
-})
+preview=el.cloneNode(true)
+preview.classList.add("drag-preview")
+document.body.appendChild(preview)
 
-// touch mobile
+dragShape=JSON.parse(el.dataset.shape)
 
-grid.addEventListener("touchend",e=>{
-if(!window.touchShape) return
-let shape=JSON.parse(window.touchShape)
-dropShape(e.changedTouches[0],shape)
-window.touchShape=null
-})
+moveDrag(e)
 
-function dropShape(e,shape){
+window.addEventListener("pointermove",moveDrag)
+window.addEventListener("pointerup",endDrag)
+}
+
+function moveDrag(e){
+if(!preview) return
+preview.style.left=e.clientX+"px"
+preview.style.top=e.clientY+"px"
+
+highlight(e)
+}
+
+function highlight(e){
 const rect=grid.getBoundingClientRect()
+
 const x=Math.floor((e.clientX-rect.left)/(rect.width/10))
 const y=Math.floor((e.clientY-rect.top)/(rect.height/10))
-place(shape,x,y)
+
+[...grid.children].forEach(c=>c.classList.remove("hover"))
+
+if(x<0||y<0||x>9||y>9) return
+
+const index=y*10+x
+if(grid.children[index]) grid.children[index].classList.add("hover")
+}
+
+function endDrag(e){
+if(!dragShape) return
+
+const rect=grid.getBoundingClientRect()
+
+const x=Math.floor((e.clientX-rect.left)/(rect.width/10))
+const y=Math.floor((e.clientY-rect.top)/(rect.height/10))
+
+place(dragShape,x,y)
 spawnPieces()
+
+preview.remove()
+preview=null
+
+window.removeEventListener("pointermove",moveDrag)
+window.removeEventListener("pointerup",endDrag)
 }
 
 function place(shape,x,y){
@@ -279,13 +377,10 @@ board[py*10+px]=1
 })
 })
 
-score+=10*multiplier
+score+=10
 coins+=2
 
-sounds.place.play()
-
 checkLines()
-levelUp()
 render()
 save()
 }
@@ -298,69 +393,11 @@ if(!board[y*10+x]) full=false
 }
 if(full){
 for(let x=0;x<10;x++) board[y*10+x]=0
-score+=50*multiplier
+score+=50
 coins+=10
-achievement("Line Clear")
-sounds.line.play()
+achievement("Line Clear ✨")
 }
 }
-}
-
-function levelUp(){
-let newLevel=Math.floor(score/500)+1
-if(newLevel>level){
-level=newLevel
-multiplier=1+level*0.2
-achievement("Level Up " + level)
-sounds.reward.play()
-}
-}
-
-function buyPower(){
-if(coins<30) return
-coins-=30
-multiplier+=1
-achievement("⚡ Power Boost")
-render()
-}
-
-function unlockTheme(){
-if(coins<50) return
-coins-=50
-
-document.documentElement.style.setProperty("--accent","#f59e0b")
-document.documentElement.style.setProperty("--accent2","#ef4444")
-
-achievement("Theme Unlocked")
-render()
-}
-
-function dailyReward(){
-let last=localStorage.getItem("daily")
-let today=new Date().toDateString()
-
-if(last===today){
-achievement("Already claimed")
-return
-}
-
-coins+=40
-localStorage.setItem("daily",today)
-achievement("Daily Reward +40")
-sounds.reward.play()
-render()
-}
-
-function startMultiplayer(){
-let target=500+Math.random()*1000
-achievement("Race to "+Math.floor(target))
-
-let interval=setInterval(()=>{
-if(score>=target){
-achievement("You Win Multiplayer!")
-clearInterval(interval)
-}
-},1000)
 }
 
 function render(){
@@ -383,16 +420,20 @@ achievements.prepend(d)
 function save(){
 localStorage.setItem("score",score)
 localStorage.setItem("coins",coins)
-localStorage.setItem("level",level)
 localStorage.setItem("board",JSON.stringify(board))
 }
 
 function load(){
 score=+localStorage.getItem("score")||0
 coins=+localStorage.getItem("coins")||0
-level=+localStorage.getItem("level")||1
 board=JSON.parse(localStorage.getItem("board"))||board
 render()
+}
+
+function dailyReward(){coins+=40;render()}
+function buyPower(){coins-=30}
+function unlockTheme(){
+document.documentElement.style.setProperty("--accent","#f59e0b")
 }
 
 const scoreEl=document.getElementById("score")
