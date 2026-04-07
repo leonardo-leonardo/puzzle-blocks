@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Puzzle Blocks — Reward Edition</title>
+<style>
+:root{
+  --bg:#0f172a;
+  --panel:#111827;
+  --accent:#22c55e;
+  --accent2:#3b82f6;
+  --text:#e5e7eb;
+  --soft:#1f2937;
+}
+
+*{
+box-sizing:border-box;
+font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;
+}
+
+body{
+margin:0;
+background:linear-gradient(135deg,#020617,#020617 40%,#020617);
+color:var(--text);
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+}
+
+.app{
+width:100%;
+max-width:1100px;
+padding:20px;
+}
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:15px;
+}
+
+.title{
+font-size:26px;
+font-weight:700;
+letter-spacing:.5px;
+}
+
+.stats{
+display:flex;
+gap:15px;
+}
+
+.card{
+background:var(--panel);
+padding:12px 18px;
+border-radius:14px;
+box-shadow:0 10px 25px rgba(0,0,0,.4);
+}
+
+.game{
+display:grid;
+grid-template-columns:1fr 320px;
+gap:20px;
+}
+
+.board{
+background:var(--panel);
+padding:15px;
+border-radius:18px;
+box-shadow:0 15px 40px rgba(0,0,0,.4);
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(10,1fr);
+gap:6px;
+}
+
+.cell{
+width:100%;
+aspect-ratio:1;
+background:#020617;
+border-radius:6px;
+transition:.2s;
+}
+
+.cell.filled{
+background:linear-gradient(135deg,var(--accent2),var(--accent));
+box-shadow:0 0 10px rgba(59,130,246,.6);
+}
+
+.sidebar{
+display:flex;
+flex-direction:column;
+gap:15px;
+}
+
+.pieces{
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.piece{
+background:var(--soft);
+padding:10px;
+border-radius:12px;
+display:grid;
+gap:3px;
+cursor:grab;
+transition:.2s;
+}
+
+.piece:hover{
+transform:scale(1.03);
+}
+
+.block{
+width:18px;
+height:18px;
+background:linear-gradient(135deg,var(--accent2),var(--accent));
+border-radius:4px;
+}
+
+.reward{
+background:linear-gradient(135deg,#1f2937,#020617);
+padding:15px;
+border-radius:15px;
+text-align:center;
+}
+
+.btn{
+background:linear-gradient(135deg,var(--accent),var(--accent2));
+border:none;
+padding:10px 14px;
+border-radius:10px;
+color:white;
+font-weight:600;
+cursor:pointer;
+margin-top:10px;
+}
+
+.achievement{
+background:#020617;
+padding:8px;
+border-radius:8px;
+margin-top:6px;
+font-size:13px;
+}
+
+.footer{
+margin-top:10px;
+opacity:.6;
+font-size:12px;
+text-align:center;
+}
+
+@media(max-width:900px){
+.game{
+  grid-template-columns:1fr;
+}
+}
+
+.pop{
+animation:pop .3s ease;
+}
+
+@keyframes pop{
+0%{transform:scale(.8);opacity:0}
+100%{transform:scale(1);opacity:1}
+}
+
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<div class="header">
+<div class="title">🧩 Puzzle Blocks — Reward Edition</div>
+
+<div class="stats">
+<div class="card">Score: <span id="score">0</span></div>
+<div class="card">Coins: <span id="coins">0</span></div>
+</div>
+</div>
+
+<div class="game">
+
+<div class="board">
+<div class="grid" id="grid"></div>
+</div>
+
+<div class="sidebar">
+
+<div class="card">
+<div>Drag Blocks</div>
+<div class="pieces" id="pieces"></div>
+</div>
+
+<div class="reward">
+<h3>🎁 Rewards</h3>
+<div>Earn coins & unlock themes</div>
+<button class="btn" onclick="buyTheme()">Unlock Theme (50)</button>
+<div id="achievements"></div>
+</div>
+
+</div>
+
+</div>
+
+<div class="footer">Beautiful UI • Reward System • Smooth Gameplay</div>
+
+</div>
+
+<script>
+
+const grid=document.getElementById("grid")
+const piecesEl=document.getElementById("pieces")
+
+let score=0
+let coins=0
+let board=[]
+
+const shapes=[
+[[1,1],[1,1]],
+[[1,1,1]],
+[[1],[1],[1]],
+[[1,1,0],[0,1,1]],
+[[0,1,1],[1,1,0]],
+[[1,1,1],[0,1,0]]
+]
+
+function init(){
+for(let i=0;i<100;i++){
+const cell=document.createElement("div")
+cell.className="cell"
+grid.appendChild(cell)
+board.push(0)
+}
+spawnPieces()
+load()
+}
+
+function spawnPieces(){
+piecesEl.innerHTML=""
+for(let i=0;i<3;i++){
+createPiece()
+}
+}
+
+function createPiece(){
+const shape=shapes[Math.floor(Math.random()*shapes.length)]
+
+const piece=document.createElement("div")
+piece.className="piece"
+
+piece.dataset.shape=JSON.stringify(shape)
+
+shape.forEach(row=>{
+const rowEl=document.createElement("div")
+rowEl.style.display="flex"
+row.forEach(cell=>{
+const b=document.createElement("div")
+b.className=cell?"block":""
+b.style.opacity=cell?1:0
+rowEl.appendChild(b)
+})
+piece.appendChild(rowEl)
+})
+
+piece.draggable=true
+
+piece.addEventListener("dragstart",e=>{
+e.dataTransfer.setData("shape",piece.dataset.shape)
+piece.classList.add("pop")
+})
+
+piecesEl.appendChild(piece)
+}
+
+grid.addEventListener("dragover",e=>e.preventDefault())
+
+grid.addEventListener("drop",e=>{
+const shape=JSON.parse(e.dataTransfer.getData("shape"))
+
+const rect=grid.getBoundingClientRect()
+const x=Math.floor((e.clientX-rect.left)/((rect.width)/10))
+const y=Math.floor((e.clientY-rect.top)/((rect.height)/10))
+
+place(shape,x,y)
+spawnPieces()
+})
+
+function place(shape,x,y){
+let valid=true
+
+shape.forEach((row,dy)=>{
+row.forEach((cell,dx)=>{
+if(cell){
+const px=x+dx
+const py=y+dy
+
+if(px>=10||py>=10||board[py*10+px]){
+valid=false
+}
+}
+})
+})
+
+if(!valid)return
+
+shape.forEach((row,dy)=>{
+row.forEach((cell,dx)=>{
+if(cell){
+const px=x+dx
+const py=y+dy
+board[py*10+px]=1
+}
+})
+})
+
+score+=10
+coins+=2
+
+checkLines()
+render()
+save()
+}
+
+function checkLines(){
+for(let y=0;y<10;y++){
+let full=true
+for(let x=0;x<10;x++){
+if(!board[y*10+x]) full=false
+}
+if(full){
+for(let x=0;x<10;x++) board[y*10+x]=0
+score+=50
+coins+=10
+achievement("Line Clear! +10 coins")
+}
+}
+}
+
+function render(){
+[...grid.children].forEach((cell,i)=>{
+cell.classList.toggle("filled",board[i])
+})
+
+document.getElementById("score").textContent=score
+
+document.getElementById("coins").textContent=coins
+}
+
+function achievement(text){
+const el=document.createElement("div")
+el.className="achievement pop"
+el.textContent=text
+
+document.getElementById("achievements").prepend(el)
+}
+
+function buyTheme(){
+if(coins<50) return
+coins-=50
+
+document.documentElement.style.setProperty("--accent","#f59e0b")
+document.documentElement.style.setProperty("--accent2","#ef4444")
+
+achievement("🔥 New Theme Unlocked!")
+save()
+render()
+}
+
+function save(){
+localStorage.setItem("puzzle-score",score)
+localStorage.setItem("puzzle-coins",coins)
+localStorage.setItem("puzzle-board",JSON.stringify(board))
+}
+
+function load(){
+score=+localStorage.getItem("puzzle-score")||0
+coins=+localStorage.getItem("puzzle-coins")||0
+board=JSON.parse(localStorage.getItem("puzzle-board"))||board
+render()
+}
+
+init()
+
+</script>
+
+</body>
+</html>
