@@ -2,26 +2,24 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Puzzle Blocks — Reward Edition</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Puzzle Blocks Ultimate</title>
+
 <style>
 :root{
-  --bg:#0f172a;
-  --panel:#111827;
-  --accent:#22c55e;
-  --accent2:#3b82f6;
-  --text:#e5e7eb;
-  --soft:#1f2937;
+--bg:#020617;
+--panel:#0f172a;
+--accent:#22c55e;
+--accent2:#3b82f6;
+--text:#e5e7eb;
+--soft:#1f2937;
 }
 
-*{
-box-sizing:border-box;
-font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto;
-}
+*{box-sizing:border-box;font-family:Inter,system-ui}
 
 body{
 margin:0;
-background:linear-gradient(135deg,#020617,#020617 40%,#020617);
+background:linear-gradient(135deg,#020617,#020617);
 color:var(--text);
 display:flex;
 justify-content:center;
@@ -29,190 +27,130 @@ align-items:center;
 min-height:100vh;
 }
 
-.app{
-width:100%;
-max-width:1100px;
-padding:20px;
-}
+.app{width:100%;max-width:1100px;padding:20px}
 
-.header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:15px;
-}
+.header{display:flex;justify-content:space-between;margin-bottom:10px}
 
-.title{
-font-size:26px;
-font-weight:700;
-letter-spacing:.5px;
-}
+.title{font-size:26px;font-weight:700}
 
-.stats{
-display:flex;
-gap:15px;
-}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
 
 .card{
 background:var(--panel);
-padding:12px 18px;
-border-radius:14px;
-box-shadow:0 10px 25px rgba(0,0,0,.4);
+padding:10px 14px;
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,.5)
 }
 
 .game{
 display:grid;
 grid-template-columns:1fr 320px;
-gap:20px;
+gap:15px
 }
 
 .board{
 background:var(--panel);
-padding:15px;
-border-radius:18px;
-box-shadow:0 15px 40px rgba(0,0,0,.4);
+padding:12px;
+border-radius:16px
 }
 
 .grid{
 display:grid;
 grid-template-columns:repeat(10,1fr);
-gap:6px;
+gap:6px
 }
 
 .cell{
-width:100%;
 aspect-ratio:1;
 background:#020617;
 border-radius:6px;
-transition:.2s;
+transition:.2s
 }
 
-.cell.filled{
-background:linear-gradient(135deg,var(--accent2),var(--accent));
-box-shadow:0 0 10px rgba(59,130,246,.6);
+.filled{
+background:linear-gradient(135deg,var(--accent),var(--accent2));
+box-shadow:0 0 10px rgba(34,197,94,.4)
 }
 
-.sidebar{
-display:flex;
-flex-direction:column;
-gap:15px;
-}
+.sidebar{display:flex;flex-direction:column;gap:10px}
 
-.pieces{
-display:flex;
-flex-direction:column;
-gap:10px;
-}
+.pieces{display:flex;flex-direction:column;gap:8px}
 
 .piece{
 background:var(--soft);
-padding:10px;
-border-radius:12px;
-display:grid;
-gap:3px;
-cursor:grab;
-transition:.2s;
+padding:8px;
+border-radius:10px;
+cursor:grab
 }
 
-.piece:hover{
-transform:scale(1.03);
-}
-
-.block{
-width:18px;
-height:18px;
-background:linear-gradient(135deg,var(--accent2),var(--accent));
-border-radius:4px;
-}
-
-.reward{
-background:linear-gradient(135deg,#1f2937,#020617);
-padding:15px;
-border-radius:15px;
-text-align:center;
-}
+.block{width:16px;height:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));margin:1px;border-radius:3px}
 
 .btn{
 background:linear-gradient(135deg,var(--accent),var(--accent2));
 border:none;
-padding:10px 14px;
-border-radius:10px;
 color:white;
-font-weight:600;
-cursor:pointer;
-margin-top:10px;
-}
-
-.achievement{
-background:#020617;
-padding:8px;
+padding:8px 10px;
 border-radius:8px;
-margin-top:6px;
-font-size:13px;
+cursor:pointer;
+margin-top:5px
 }
 
-.footer{
-margin-top:10px;
-opacity:.6;
-font-size:12px;
-text-align:center;
-}
+.reward{background:var(--panel);padding:10px;border-radius:12px}
+
+.achievement{background:#020617;padding:6px;border-radius:6px;margin-top:4px;font-size:12px}
 
 @media(max-width:900px){
-.game{
-  grid-template-columns:1fr;
-}
-}
-
-.pop{
-animation:pop .3s ease;
-}
-
-@keyframes pop{
-0%{transform:scale(.8);opacity:0}
-100%{transform:scale(1);opacity:1}
+.game{grid-template-columns:1fr}
 }
 
 </style>
+
 </head>
 
 <body>
+
 <div class="app">
 
 <div class="header">
-<div class="title">🧩 Puzzle Blocks — Reward Edition</div>
+<div class="title">🧩 Puzzle Blocks Ultimate</div>
 
 <div class="stats">
-<div class="card">Score: <span id="score">0</span></div>
-<div class="card">Coins: <span id="coins">0</span></div>
+<div class="card">Score <span id="score">0</span></div>
+<div class="card">Coins <span id="coins">0</span></div>
+<div class="card">Level <span id="level">1</span></div>
 </div>
+
 </div>
 
 <div class="game">
 
 <div class="board">
-<div class="grid" id="grid"></div>
+<div id="grid" class="grid"></div>
 </div>
 
 <div class="sidebar">
 
 <div class="card">
-<div>Drag Blocks</div>
-<div class="pieces" id="pieces"></div>
+<div>Blocks</div>
+<div id="pieces" class="pieces"></div>
 </div>
 
 <div class="reward">
-<h3>🎁 Rewards</h3>
-<div>Earn coins & unlock themes</div>
-<button class="btn" onclick="buyTheme()">Unlock Theme (50)</button>
+<div>🎁 Rewards</div>
+<button class="btn" onclick="dailyReward()">Daily Reward</button>
+<button class="btn" onclick="buyPower()">Buy Powerup (30)</button>
+<button class="btn" onclick="unlockTheme()">Theme (50)</button>
 <div id="achievements"></div>
 </div>
 
+<div class="card">
+<div>👥 Multiplayer</div>
+<button class="btn" onclick="startMultiplayer()">Start Race</button>
 </div>
 
 </div>
 
-<div class="footer">Beautiful UI • Reward System • Smooth Gameplay</div>
+</div>
 
 </div>
 
@@ -221,9 +159,17 @@ animation:pop .3s ease;
 const grid=document.getElementById("grid")
 const piecesEl=document.getElementById("pieces")
 
+let board=[]
 let score=0
 let coins=0
-let board=[]
+let level=1
+let multiplier=1
+
+const sounds={
+place:new Audio("https://actions.google.com/sounds/v1/cartoon/pop.ogg"),
+line:new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"),
+reward:new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg")
+}
 
 const shapes=[
 [[1,1],[1,1]],
@@ -236,9 +182,9 @@ const shapes=[
 
 function init(){
 for(let i=0;i<100;i++){
-const cell=document.createElement("div")
-cell.className="cell"
-grid.appendChild(cell)
+let d=document.createElement("div")
+d.className="cell"
+grid.appendChild(d)
 board.push(0)
 }
 spawnPieces()
@@ -247,86 +193,99 @@ load()
 
 function spawnPieces(){
 piecesEl.innerHTML=""
-for(let i=0;i<3;i++){
-createPiece()
-}
+for(let i=0;i<3;i++) createPiece()
 }
 
 function createPiece(){
-const shape=shapes[Math.floor(Math.random()*shapes.length)]
+const shape=shapes[Math.random()*shapes.length|0]
+const p=document.createElement("div")
+p.className="piece"
+p.dataset.shape=JSON.stringify(shape)
 
-const piece=document.createElement("div")
-piece.className="piece"
-
-piece.dataset.shape=JSON.stringify(shape)
-
-shape.forEach(row=>{
-const rowEl=document.createElement("div")
-rowEl.style.display="flex"
-row.forEach(cell=>{
-const b=document.createElement("div")
-b.className=cell?"block":""
-b.style.opacity=cell?1:0
-rowEl.appendChild(b)
+shape.forEach(r=>{
+let row=document.createElement("div")
+row.style.display="flex"
+r.forEach(c=>{
+let b=document.createElement("div")
+b.className="block"
+b.style.opacity=c?1:0
+row.appendChild(b)
 })
-piece.appendChild(rowEl)
+p.appendChild(row)
 })
 
-piece.draggable=true
+p.draggable=true
 
-piece.addEventListener("dragstart",e=>{
-e.dataTransfer.setData("shape",piece.dataset.shape)
-piece.classList.add("pop")
+p.addEventListener("dragstart",e=>{
+e.dataTransfer.setData("shape",p.dataset.shape)
 })
 
-piecesEl.appendChild(piece)
+// mobile touch
+p.addEventListener("touchstart",e=>{
+window.touchShape=p.dataset.shape
+})
+
+piecesEl.appendChild(p)
 }
+
+// drag
 
 grid.addEventListener("dragover",e=>e.preventDefault())
 
 grid.addEventListener("drop",e=>{
 const shape=JSON.parse(e.dataTransfer.getData("shape"))
+dropShape(e,shape)
+})
 
+// touch mobile
+
+grid.addEventListener("touchend",e=>{
+if(!window.touchShape) return
+let shape=JSON.parse(window.touchShape)
+dropShape(e.changedTouches[0],shape)
+window.touchShape=null
+})
+
+function dropShape(e,shape){
 const rect=grid.getBoundingClientRect()
-const x=Math.floor((e.clientX-rect.left)/((rect.width)/10))
-const y=Math.floor((e.clientY-rect.top)/((rect.height)/10))
-
+const x=Math.floor((e.clientX-rect.left)/(rect.width/10))
+const y=Math.floor((e.clientY-rect.top)/(rect.height/10))
 place(shape,x,y)
 spawnPieces()
-})
+}
 
 function place(shape,x,y){
 let valid=true
 
-shape.forEach((row,dy)=>{
-row.forEach((cell,dx)=>{
-if(cell){
-const px=x+dx
-const py=y+dy
-
-if(px>=10||py>=10||board[py*10+px]){
-valid=false
-}
+shape.forEach((r,dy)=>{
+r.forEach((c,dx)=>{
+if(c){
+let px=x+dx
+let py=y+dy
+if(px>=10||py>=10||board[py*10+px]) valid=false
 }
 })
 })
 
-if(!valid)return
+if(!valid) return
 
-shape.forEach((row,dy)=>{
-row.forEach((cell,dx)=>{
-if(cell){
-const px=x+dx
-const py=y+dy
+shape.forEach((r,dy)=>{
+r.forEach((c,dx)=>{
+if(c){
+let px=x+dx
+let py=y+dy
 board[py*10+px]=1
 }
 })
 })
 
-score+=10
+score+=10*multiplier
 coins+=2
 
+sounds.place.play()
+
 checkLines()
+levelUp()
 render()
 save()
 }
@@ -339,55 +298,107 @@ if(!board[y*10+x]) full=false
 }
 if(full){
 for(let x=0;x<10;x++) board[y*10+x]=0
-score+=50
+score+=50*multiplier
 coins+=10
-achievement("Line Clear! +10 coins")
+achievement("Line Clear")
+sounds.line.play()
 }
 }
 }
 
-function render(){
-[...grid.children].forEach((cell,i)=>{
-cell.classList.toggle("filled",board[i])
-})
-
-document.getElementById("score").textContent=score
-
-document.getElementById("coins").textContent=coins
+function levelUp(){
+let newLevel=Math.floor(score/500)+1
+if(newLevel>level){
+level=newLevel
+multiplier=1+level*0.2
+achievement("Level Up " + level)
+sounds.reward.play()
+}
 }
 
-function achievement(text){
-const el=document.createElement("div")
-el.className="achievement pop"
-el.textContent=text
-
-document.getElementById("achievements").prepend(el)
+function buyPower(){
+if(coins<30) return
+coins-=30
+multiplier+=1
+achievement("⚡ Power Boost")
+render()
 }
 
-function buyTheme(){
+function unlockTheme(){
 if(coins<50) return
 coins-=50
 
 document.documentElement.style.setProperty("--accent","#f59e0b")
 document.documentElement.style.setProperty("--accent2","#ef4444")
 
-achievement("🔥 New Theme Unlocked!")
-save()
+achievement("Theme Unlocked")
 render()
+}
+
+function dailyReward(){
+let last=localStorage.getItem("daily")
+let today=new Date().toDateString()
+
+if(last===today){
+achievement("Already claimed")
+return
+}
+
+coins+=40
+localStorage.setItem("daily",today)
+achievement("Daily Reward +40")
+sounds.reward.play()
+render()
+}
+
+function startMultiplayer(){
+let target=500+Math.random()*1000
+achievement("Race to "+Math.floor(target))
+
+let interval=setInterval(()=>{
+if(score>=target){
+achievement("You Win Multiplayer!")
+clearInterval(interval)
+}
+},1000)
+}
+
+function render(){
+[...grid.children].forEach((c,i)=>{
+c.classList.toggle("filled",board[i])
+})
+
+scoreEl.textContent=score
+coinsEl.textContent=coins
+levelEl.textContent=level
+}
+
+function achievement(t){
+let d=document.createElement("div")
+d.className="achievement"
+d.textContent=t
+achievements.prepend(d)
 }
 
 function save(){
-localStorage.setItem("puzzle-score",score)
-localStorage.setItem("puzzle-coins",coins)
-localStorage.setItem("puzzle-board",JSON.stringify(board))
+localStorage.setItem("score",score)
+localStorage.setItem("coins",coins)
+localStorage.setItem("level",level)
+localStorage.setItem("board",JSON.stringify(board))
 }
 
 function load(){
-score=+localStorage.getItem("puzzle-score")||0
-coins=+localStorage.getItem("puzzle-coins")||0
-board=JSON.parse(localStorage.getItem("puzzle-board"))||board
+score=+localStorage.getItem("score")||0
+coins=+localStorage.getItem("coins")||0
+level=+localStorage.getItem("level")||1
+board=JSON.parse(localStorage.getItem("board"))||board
 render()
 }
+
+const scoreEl=document.getElementById("score")
+const coinsEl=document.getElementById("coins")
+const levelEl=document.getElementById("level")
+const achievements=document.getElementById("achievements")
 
 init()
 
