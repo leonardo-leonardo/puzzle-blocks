@@ -3,358 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Puzzle Blocks Ultimate</title>
-
-<style>
-:root{
---bg:#020617;
---panel:#0f172a;
---accent:#22c55e;
---accent2:#3b82f6;
---text:#e5e7eb;
-}
-
-*{
-box-sizing:border-box;
-font-family:Inter,system-ui;
-}
-
-body{
-margin:0;
-background:linear-gradient(135deg,#020617,#020617);
-color:var(--text);
-display:flex;
-justify-content:center;
-align-items:center;
-min-height:100vh;
-}
-
-.app{
-width:100%;
-max-width:1100px;
-padding:20px;
-}
-
-.header{
-display:flex;
-justify-content:space-between;
-margin-bottom:10px;
-}
-
-.title{
-font-size:26px;
-font-weight:700;
-}
-
-.stats{
-display:flex;
-gap:10px;
-}
-
-.card{
-background:var(--panel);
-padding:10px 14px;
-border-radius:12px;
-}
-
-.game{
-display:grid;
-grid-template-columns:1fr 320px;
-gap:15px;
-}
-
-.board{
-background:var(--panel);
-padding:12px;
-border-radius:16px;
-}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(10,1fr);
-gap:6px;
-}
-
-.cell{
-aspect-ratio:1;
-background:#020617;
-border-radius:6px;
-transition:.15s;
-}
-
-.cell.preview{
-background:#1e293b;
-}
-
-.filled{
-background:linear-gradient(135deg,var(--accent),var(--accent2));
-}
-
-.sidebar{
-display:flex;
-flex-direction:column;
-gap:10px;
-}
-
-.pieces{
-display:flex;
-gap:8px;
-flex-wrap:wrap;
-}
-
-.piece{
-background:#111827;
-padding:8px;
-border-radius:10px;
-cursor:pointer;
-}
-
-.block{
-width:16px;
-height:16px;
-background:linear-gradient(135deg,var(--accent),var(--accent2));
-margin:2px;
-border-radius:3px;
-}
-
-.btn{
-background:linear-gradient(135deg,var(--accent),var(--accent2));
-border:none;
-color:white;
-padding:8px;
-border-radius:8px;
-cursor:pointer;
-}
-
-.dragging{
-position:fixed;
-pointer-events:none;
-z-index:1000;
-opacity:.9;
-}
-
-@media(max-width:900px){
-.game{grid-template-columns:1fr}
-}
-
-</style>
-
+<title>Puzzle Blocks</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
-<div class="app">
+<div class="game-container">
 
-<div class="header">
-<div class="title">🧩 Puzzle Blocks</div>
+<header>
+<h1>🧩 Puzzle Blocks</h1>
+<div class="top-bar">
+<div>Score: <span id="score">0</span></div>
+<button id="dailyBtn">🎁 Daily Reward</button>
+<button id="leaderBtn">🏆 Leaderboard</button>
+</div>
+</header>
 
-<div class="stats">
-<div class="card">Score <span id="score">0</span></div>
-<div class="card">Coins <span id="coins">0</span></div>
+<main>
+<canvas id="game"></canvas>
+</main>
+
+<div class="controls">
+<button id="startBtn">Start Game</button>
+<button id="restartBtn">Restart</button>
 </div>
 
 </div>
 
-<div class="game">
-
-<div class="board">
-<div id="grid" class="grid"></div>
+<div class="leaderboard" id="leaderboard">
+<h2>Leaderboard</h2>
+<ul id="leaderList"></ul>
+<button onclick="closeLeader()">Close</button>
 </div>
 
-<div class="sidebar">
-
-<div class="card">
-<div>Blocks</div>
-<div id="pieces" class="pieces"></div>
+<div class="daily" id="daily">
+<h2>Daily Reward</h2>
+<p>You received <span id="reward">0</span> coins!</p>
+<button onclick="closeDaily()">Close</button>
 </div>
 
-<div class="card">
-<button class="btn" onclick="dailyReward()">🎁 Daily Reward</button>
-</div>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-</div>
-
-</div>
-
-</div>
-
-<script>
-
-const grid=document.getElementById("grid")
-const piecesEl=document.getElementById("pieces")
-
-let board=[]
-let score=0
-let coins=0
-
-const shapes=[
-[[1,1],[1,1]],
-[[1,1,1]],
-[[1],[1],[1]],
-[[1,1,0],[0,1,1]],
-[[0,1,1],[1,1,0]],
-[[1,1,1],[0,1,0]]
-]
-
-function init(){
-for(let i=0;i<100;i++){
-let c=document.createElement("div")
-c.className="cell"
-grid.appendChild(c)
-board.push(0)
-}
-spawnPieces()
-render()
-}
-
-function spawnPieces(){
-piecesEl.innerHTML=""
-for(let i=0;i<3;i++) createPiece()
-}
-
-let dragShape=null
-let dragEl=null
-
-function createPiece(){
-const shape=shapes[Math.floor(Math.random()*shapes.length)]
-const p=document.createElement("div")
-p.className="piece"
-p.dataset.shape=JSON.stringify(shape)
-
-shape.forEach(row=>{
-const r=document.createElement("div")
-r.style.display="flex"
-row.forEach(cell=>{
-const b=document.createElement("div")
-b.className="block"
-b.style.opacity=cell?1:0
-r.appendChild(b)
-})
-p.appendChild(r)
-})
-
-p.addEventListener("pointerdown",startDrag)
-
-piecesEl.appendChild(p)
-}
-
-function startDrag(e){
-dragShape=JSON.parse(e.currentTarget.dataset.shape)
-
- dragEl=e.currentTarget.cloneNode(true)
- dragEl.classList.add("dragging")
- document.body.appendChild(dragEl)
-
-moveDrag(e)
-
-window.addEventListener("pointermove",moveDrag)
-window.addEventListener("pointerup",endDrag)
-}
-
-function moveDrag(e){
-if(!dragEl) return
- dragEl.style.left=e.clientX-30+"px"
- dragEl.style.top=e.clientY-30+"px"
-
-preview(e)
-}
-
-function preview(e){
-const rect=grid.getBoundingClientRect()
-
-const x=Math.floor((e.clientX-rect.left)/(rect.width/10))
-const y=Math.floor((e.clientY-rect.top)/(rect.height/10))
-
-[...grid.children].forEach(c=>c.classList.remove("preview"))
-
-if(x<0||y<0||x>9||y>9) return
-
-const index=y*10+x
-if(grid.children[index]) grid.children[index].classList.add("preview")
-}
-
-function endDrag(e){
-const rect=grid.getBoundingClientRect()
-
-const x=Math.floor((e.clientX-rect.left)/(rect.width/10))
-const y=Math.floor((e.clientY-rect.top)/(rect.height/10))
-
-place(dragShape,x,y)
-spawnPieces()
-
-if(dragEl) dragEl.remove()
-
-window.removeEventListener("pointermove",moveDrag)
-window.removeEventListener("pointerup",endDrag)
-}
-
-function place(shape,x,y){
-let valid=true
-
-shape.forEach((row,dy)=>{
-row.forEach((cell,dx)=>{
-if(cell){
-const px=x+dx
-const py=y+dy
-if(px>=10||py>=10||board[py*10+px]) valid=false
-}
-})
-})
-
-if(!valid) return
-
-shape.forEach((row,dy)=>{
-row.forEach((cell,dx)=>{
-if(cell){
-const px=x+dx
-const py=y+dy
-board[py*10+px]=1
-}
-})
-})
-
-score+=10
-coins+=2
-
-checkLines()
-render()
-}
-
-function checkLines(){
-for(let y=0;y<10;y++){
-let full=true
-for(let x=0;x<10;x++){
-if(!board[y*10+x]) full=false
-}
-
-if(full){
-for(let x=0;x<10;x++) board[y*10+x]=0
-score+=50
-coins+=10
-}
-}
-}
-
-function render(){
-[...grid.children].forEach((c,i)=>{
-c.classList.toggle("filled",board[i])
-})
-
-scoreEl.textContent=score
-coinsEl.textContent=coins
-}
-
-function dailyReward(){
-coins+=30
-render()
-}
-
-const scoreEl=document.getElementById("score")
-const coinsEl=document.getElementById("coins")
-
-init()
-
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
