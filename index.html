@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Puzzle Blocks</title>
+
+<title>🧩 Puzzle Blocks</title>
+
 <link rel="stylesheet" href="style.css">
+
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
 </head>
 
 <body>
@@ -14,11 +19,15 @@
 
 <header>
 <h1>🧩 Puzzle Blocks</h1>
+
 <div class="top-bar">
 <div>Score: <span id="score">0</span></div>
+
 <button id="dailyBtn">🎁 Daily</button>
+
 <button id="leaderBtn">🏆 Leaderboard</button>
 </div>
+
 </header>
 
 <canvas id="game"></canvas>
@@ -30,12 +39,14 @@
 
 </div>
 
+<!-- Leaderboard -->
 <div class="popup" id="leaderboard">
 <h2>🏆 Leaderboard</h2>
 <ul id="leaderList"></ul>
 <button onclick="closeLeader()">Close</button>
 </div>
 
+<!-- Daily Reward -->
 <div class="popup" id="daily">
 <h2>🎁 Daily Reward</h2>
 <p>You received <span id="reward"></span> coins</p>
@@ -45,4 +56,5 @@
 <script src="script.js"></script>
 
 </body>
+
 </html>
