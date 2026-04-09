@@ -1,75 +1,59 @@
-const canvas = document.getElementById("game");
-
-blocks = blocks.filter(block=>{
-if(x>block.x && x<block.x+block.size && y>block.y && y<block.y+block.size){
-score+=5;
-return false;
-}
-return true;
-})
-
-document.getElementById("score").innerText=score;
-})
-
-// Daily Reward
+const canvas = document.getElementById("game")
 
 document.getElementById("dailyBtn").onclick = ()=>{
-let reward = Math.floor(Math.random()*100);
-document.getElementById("reward").innerText = reward;
-document.getElementById("daily").style.display="block";
+let today = new Date().toDateString()
+let last = localStorage.getItem("daily")
+
+if(last !== today){
+let reward = Math.floor(Math.random()*100)+50
+localStorage.setItem("daily",today)
+
+document.getElementById("reward").innerText = reward
+}
+else{
+document.getElementById("reward").innerText = "Already claimed"
+}
+
+
+document.getElementById("daily").style.display = "block"
 }
 
 function closeDaily(){
-document.getElementById("daily").style.display="none";
+document.getElementById("daily").style.display = "none"
 }
 
 // Leaderboard
 
-const firebaseConfig = {
-apiKey: "YOUR_API_KEY",
-authDomain: "YOUR_AUTH",
-projectId: "YOUR_ID"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
 function saveScore(){
-db.collection("scores").add({
-score:score,
-date:Date.now()
-})
+let scores = JSON.parse(localStorage.getItem("scores") || "[]")
+scores.push(score)
+scores.sort((a,b)=>b-a)
+scores = scores.slice(0,10)
+
+localStorage.setItem("scores",JSON.stringify(scores))
 }
 
 function showLeaderboard(){
-document.getElementById("leaderboard").style.display="block";
+let scores = JSON.parse(localStorage.getItem("scores") || "[]")
+let list = document.getElementById("leaderList")
 
-let list = document.getElementById("leaderList");
-list.innerHTML="";
+list.innerHTML = ""
 
-db.collection("scores")
-.orderBy("score","desc")
-.limit(10)
-.get()
-.then(snapshot=>{
-snapshot.forEach(doc=>{
-let li=document.createElement("li");
-li.textContent=doc.data().score;
-list.appendChild(li);
+scores.forEach(s=>{
+let li = document.createElement("li")
+li.innerText = s
+list.appendChild(li)
 })
-})
+
+
+document.getElementById("leaderboard").style.display = "block"
 }
 
 function closeLeader(){
-document.getElementById("leaderboard").style.display="none";
+document.getElementById("leaderboard").style.display = "none"
 }
 
-document.getElementById("leaderBtn").onclick = showLeaderboard;
+document.getElementById("leaderBtn").onclick = showLeaderboard
 
-// Save score on restart
 
-document.getElementById("restartBtn").onclick = ()=>{
-saveScore();
-score=0;
-blocks=[];
-}
+draw()
