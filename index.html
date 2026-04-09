@@ -16,37 +16,33 @@
 <h1>🧩 Puzzle Blocks</h1>
 <div class="top-bar">
 <div>Score: <span id="score">0</span></div>
-<button id="dailyBtn">🎁 Daily Reward</button>
+<button id="dailyBtn">🎁 Daily</button>
 <button id="leaderBtn">🏆 Leaderboard</button>
 </div>
 </header>
 
-<main>
 <canvas id="game"></canvas>
-</main>
 
 <div class="controls">
-<button id="startBtn">Start Game</button>
+<button id="startBtn">Start</button>
 <button id="restartBtn">Restart</button>
 </div>
 
 </div>
 
-<div class="leaderboard" id="leaderboard">
-<h2>Leaderboard</h2>
+<div class="popup" id="leaderboard">
+<h2>🏆 Leaderboard</h2>
 <ul id="leaderList"></ul>
 <button onclick="closeLeader()">Close</button>
 </div>
 
-<div class="daily" id="daily">
-<h2>Daily Reward</h2>
-<p>You received <span id="reward">0</span> coins!</p>
+<div class="popup" id="daily">
+<h2>🎁 Daily Reward</h2>
+<p>You received <span id="reward"></span> coins</p>
 <button onclick="closeDaily()">Close</button>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
 <script src="script.js"></script>
+
 </body>
 </html>
